@@ -1,13 +1,51 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 
 import CardList from './components/card-list/card-list.component'
 
 import SearchBox from './components/search-box/search-box.component'
 
-//import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+const App = () => {
+  
+  const [searchField, setSearchField] = useState('');
+  const [monsters , setMonsters] = useState([]);
+  const [filteredMonsters, setFilteredMonsters] = useState(monsters);
+
+  console.log('render');
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then((response) => response.json())
+    .then((users) => setMonsters((users)));
+  }, []);
+  
+  useEffect(()=>{
+    const newFilteredMonsters = monsters.filter((monster) => {
+      return monster.name.toLocaleLowerCase().includes(searchField)
+    })
+
+    setFilteredMonsters(newFilteredMonsters);
+  },[monsters, searchField])
+
+  const onSearchChange = (event) => {
+    const searchFieldString = event.target.value.toLocaleLowerCase();
+    setSearchField(searchFieldString);
+  }
+
+  return (
+    <div className="App">
+      <h1 className='app-title'>Monster Rolodex</h1>
+      <SearchBox
+        className='monsters-search-box'
+        onChangeHandler={onSearchChange}
+        placeholder='Search Monster'></SearchBox>
+      <CardList monsters={filteredMonsters}></CardList>
+    </div>
+  )
+}
+
+/* class App extends Component {
 
   constructor() {
     super();
@@ -36,7 +74,7 @@ class App extends Component {
   }
 
   render() {
-/*     console.log('render from APPJS') */
+
     const { monsters, searchField } = this.state;
     const { onSearchChange } = this;
 
@@ -46,14 +84,15 @@ class App extends Component {
 
     return (
       <div className="App">
-        <SearchBox 
+        <h1 className='app-title'>Monster Rolodex</h1>
+        {<SearchBox 
         className='monsters-search-box'
         onChangeHandler={onSearchChange} 
         placeholder='Search Monster'></SearchBox>
-        <CardList monsters={newMonsters}></CardList>
+        <CardList monsters={newMonsters}></CardList>}
       </div>
     );
   }
-}
+} */
 
 export default App;
